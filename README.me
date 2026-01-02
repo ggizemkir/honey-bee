@@ -1,0 +1,61 @@
+HornetSavunma - Baslatma Kilavuzu
+
+Bu kilavuz, hem ESP32 firmware hem de web panelini ayaga kaldirmak icin
+gerekli adimlari ozetler.
+
+Gereksinimler
+- Node.js (LTS)
+- PlatformIO (VS Code eklentisi)
+- ESP32 + INMP441
+- Firebase Realtime Database (RTDB)
+
+1) Web uygulamasini baslat
+1.1) Ortam degiskenleri
+`web\.env.local` olustur:
+
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://<project-id>-default-rtdb.<region>.firebasedatabase.app
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+
+1.2) Paketleri kur ve calistir
+cd web
+npm install
+npm run dev
+
+Tarayici: http://localhost:3000
+
+2) ESP32 firmware ayarlari
+2.1) secrets.h
+`include\secrets.h` olustur:
+
+#define WIFI_SSID "SSID"
+#define WIFI_PASSWORD "PASSWORD"
+#define FIREBASE_DB_URL "https://<project-id>-default-rtdb.<region>.firebasedatabase.app"
+// Opsiyonel: #define FIREBASE_DB_SECRET "SECRET"
+
+Not: FIREBASE_DB_URL sonunda slash olmasin.
+
+2.2) Donanim baglantisi (INMP441)
+- VDD -> 3.3V
+- GND -> GND
+- SCK/BCLK -> GPIO33
+- WS/LRCL -> GPIO25
+- SD/DOUT -> GPIO32
+- L/R -> GND (Left) veya 3.3V (Right)
+
+2.3) Firmware yukleme
+PlatformIO ile build + upload.
+Serial Monitor: 115200 baud.
+
+3) Firebase RTDB kurallari (demo)
+Realtime Database -> Rules:
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+
+Not: Demo bittikten sonra kurallari guvenli hale getirmen onerilir.
