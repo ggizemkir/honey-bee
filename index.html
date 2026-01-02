@@ -1,0 +1,903 @@
+﻿<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HornetSavunma - Kovan Savunma Arayüzü</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --honey-50: #fff7df;
+      --honey-100: #fdeab5;
+      --honey-200: #f7d37b;
+      --honey-300: #f3bd4f;
+      --honey-400: #eaa02f;
+      --honey-500: #d47a11;
+      --ink-900: #23170f;
+      --ink-700: #3c2a1b;
+      --ink-500: #5a483a;
+      --leaf-400: #7d8f3a;
+      --panel: rgba(255, 255, 255, 0.68);
+      --panel-strong: rgba(255, 255, 255, 0.9);
+      --line: rgba(35, 23, 15, 0.12);
+      --shadow: 0 20px 50px rgba(35, 23, 15, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink-900);
+      background: linear-gradient(145deg, #fff7df 0%, #f7d37b 45%, #f3bd4f 100%);
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bg-veil {
+      position: fixed;
+      inset: -20% -10% -10% -10%;
+      background-image:
+        linear-gradient(30deg, rgba(60, 42, 27, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(60, 42, 27, 0.08) 87.5%, rgba(60, 42, 27, 0.08)),
+        linear-gradient(150deg, rgba(60, 42, 27, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(60, 42, 27, 0.08) 87.5%, rgba(60, 42, 27, 0.08)),
+        linear-gradient(90deg, rgba(60, 42, 27, 0.05) 2%, transparent 2%, transparent 98%, rgba(60, 42, 27, 0.05) 98%);
+      background-size: 72px 124px;
+      background-position: 0 0, 0 0, 36px 62px;
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 520px;
+      height: 520px;
+      top: -200px;
+      right: -160px;
+      background: radial-gradient(circle, rgba(234, 160, 47, 0.45), transparent 70%);
+      filter: blur(10px);
+      z-index: -3;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 20px 40px;
+      background: rgba(255, 248, 231, 0.85);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: "Fraunces", serif;
+    }
+
+    .brand-mark {
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(140deg, var(--honey-300), var(--honey-500));
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0 50%);
+      box-shadow: 0 6px 16px rgba(212, 122, 17, 0.45);
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      font-size: 1.1rem;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-title span {
+      font-size: 0.8rem;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink-500);
+      letter-spacing: 0.2px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 20px;
+      font-size: 0.95rem;
+      color: var(--ink-700);
+    }
+
+    .nav a {
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--honey-400);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .nav a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--ink-900);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: linear-gradient(140deg, var(--honey-300), var(--honey-500));
+      border: none;
+      color: var(--ink-900);
+      box-shadow: 0 10px 20px rgba(212, 122, 17, 0.3);
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink-900);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(35, 23, 15, 0.2);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 48px;
+      align-items: center;
+      padding: 80px 0 60px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      color: var(--ink-500);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--ink-700);
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px 18px;
+      box-shadow: 0 14px 30px rgba(35, 23, 15, 0.12);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .stat-card span {
+      color: var(--ink-500);
+      font-size: 0.9rem;
+    }
+
+    .hero-visual {
+      position: relative;
+      display: grid;
+      gap: 20px;
+      justify-items: center;
+    }
+
+    .hex-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .hex {
+      width: 160px;
+      height: 180px;
+      background: linear-gradient(160deg, rgba(255, 248, 231, 0.95), rgba(243, 189, 79, 0.85));
+      border: 1px solid rgba(60, 42, 27, 0.18);
+      border-radius: 24px;
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .hex:nth-child(2) {
+      animation-delay: 0.6s;
+    }
+
+    .hex:nth-child(3) {
+      animation-delay: 1.2s;
+    }
+
+    .hex:nth-child(4) {
+      animation-delay: 1.8s;
+    }
+
+    .hex strong {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .hex span {
+      font-size: 0.85rem;
+      color: var(--ink-600, #5b493b);
+    }
+
+    .beam {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(243, 189, 79, 0.25), transparent 70%);
+      top: 50%;
+      right: -40px;
+      transform: translateY(-50%);
+      z-index: -1;
+      filter: blur(2px);
+    }
+
+    .section {
+      padding: 70px 0 30px;
+    }
+
+    .section-title {
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      max-width: 720px;
+      color: var(--ink-700);
+      margin-bottom: 32px;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .flow-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 24px rgba(35, 23, 15, 0.1);
+    }
+
+    .flow-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .flow-card p {
+      color: var(--ink-500);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(234, 160, 47, 0.2);
+      border: 1px solid rgba(234, 160, 47, 0.4);
+      font-size: 0.85rem;
+      color: var(--ink-700);
+      margin-bottom: 16px;
+    }
+
+    .pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--honey-400);
+    }
+
+    .band-panel {
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .band-bar {
+      position: relative;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #eaa02f 0 35%, #fff7df 35% 55%, #7d8f3a 55% 100%);
+      margin-bottom: 22px;
+      border: 1px solid rgba(35, 23, 15, 0.18);
+    }
+
+    .band-marker {
+      position: absolute;
+      top: -18px;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: var(--ink-700);
+    }
+
+    .band-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--ink-500);
+    }
+
+    .band-labels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .band-label {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .panel {
+      background: var(--panel-strong);
+      border-radius: 30px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .panel-switch {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+    }
+
+    .panel-switch button {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--ink-700);
+    }
+
+    .panel-switch button.active {
+      background: var(--ink-900);
+      color: #fff;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .panel-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid var(--line);
+    }
+
+    .panel-card h4 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(125, 143, 58, 0.2);
+      border: 1px solid rgba(125, 143, 58, 0.4);
+      font-size: 0.85rem;
+      color: var(--ink-700);
+      margin-top: 6px;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--leaf-400);
+    }
+
+    .status-pill.is-idle {
+      background: rgba(234, 160, 47, 0.2);
+      border-color: rgba(234, 160, 47, 0.5);
+    }
+
+    .status-pill.is-idle::before {
+      background: var(--honey-400);
+    }
+
+    .meter {
+      margin-top: 14px;
+    }
+
+    .meter-bar {
+      height: 10px;
+      background: rgba(35, 23, 15, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(120deg, var(--honey-300), var(--honey-500));
+      width: var(--fill, 45%);
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--ink-500);
+      margin-top: 6px;
+    }
+
+    .panel-note {
+      font-size: 0.9rem;
+      color: var(--ink-500);
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .roadmap-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 20px rgba(35, 23, 15, 0.08);
+    }
+
+    footer {
+      padding: 40px 0 20px;
+      color: var(--ink-500);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .js .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hex-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-items: center;
+      }
+
+      .flow-grid,
+      .panel-grid,
+      .roadmap {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 840px) {
+      .site-header {
+        padding: 16px 20px;
+      }
+
+      main {
+        padding: 0 20px 60px;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-grid,
+      .panel-grid,
+      .roadmap {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 50px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-veil" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div class="brand-title">
+        HornetSavunma
+        <span>Akustik kovan güvenliği</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#overview">Genel bakış</a>
+      <a href="#flow">Sistem akışı</a>
+      <a href="#thresholds">Frekans eşikleri</a>
+      <a href="#panel">Durum paneli</a>
+    </nav>
+    <a class="button primary" href="#panel">Demo panel</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text reveal">
+        <div class="eyebrow">Akustik savunma platformu</div>
+        <h1>Kovanı frekansla dinleyen, kendini koruyan sistem</h1>
+        <p>
+          INMP441 mikrofonu ve ESP32 ile, eşek arısı ve bal arısı frekansları
+          ayrılır. Algılanan bantlara göre servo temelli koruma çıkışı üretilir.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#overview">Projeyi incele</a>
+          <a class="button secondary" href="#flow">Donanım akışı</a>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <strong>Örnekleme</strong>
+            <span>10 kHz / 1024 FFT</span>
+          </div>
+          <div class="stat-card">
+            <strong>Eşek arısı bandı</strong>
+            <span>100 - 180 Hz</span>
+          </div>
+          <div class="stat-card">
+            <strong>Bal arısı bandı</strong>
+            <span>220 - 300 Hz</span>
+          </div>
+          <div class="stat-card">
+            <strong>Servo aksiyonu</strong>
+            <span>Kapama - 10 s</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="hex-grid">
+          <div class="hex">
+            <strong>INMP441</strong>
+            <span>I2S ses alımı</span>
+          </div>
+          <div class="hex">
+            <strong>FFT Motoru</strong>
+            <span>Spektrum tarama</span>
+          </div>
+          <div class="hex">
+            <strong>Eşik Kararı</strong>
+            <span>Bant sınıfı</span>
+          </div>
+          <div class="hex">
+            <strong>Servo Kalkan</strong>
+            <span>Fiziksel tepki</span>
+          </div>
+        </div>
+        <div class="beam" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section id="overview" class="section reveal">
+      <div class="pill">Proje özeti</div>
+      <h2 class="section-title">Kovan güvenliği için net, ayarlanabilir akustik koruma</h2>
+      <p class="section-subtitle">
+        Sistem, mikrofon girdisini I2S üzerinden alır, FFT ile frekans tepe noktalarını bulur
+        ve eşek arısı bandını algıladığında savunma mekanizmasını tetikler.
+        İlk süreçte veriler statik tutulur, daha sonra ESP32 telemetrisi ile canlı gösterim planlanır.
+      </p>
+    </section>
+
+    <section id="flow" class="section reveal">
+      <div class="pill">Sistem akışı</div>
+      <h2 class="section-title">Dört adımda karara giden akıllı iş akışı</h2>
+      <p class="section-subtitle">
+        Donanım ve yazılım katmanları bir arada çalışır. Amaç: sahada yalnızca doğru frekanslarda
+        servo tepkisi vermek ve bal arılarını rahatsız etmemek.
+      </p>
+      <div class="flow-grid">
+        <div class="flow-card">
+          <h3>Mikrofon (I2S)</h3>
+          <p>INMP441 ses sinyalini dijitale çevirir, ESP32 I2S hattına aktarır.</p>
+        </div>
+        <div class="flow-card">
+          <h3>Spektrum analizi</h3>
+          <p>FFT ile 100 - 300 Hz arası bantlar hızlı ve kararlıdır.</p>
+        </div>
+        <div class="flow-card">
+          <h3>Eşik karşılaştırma</h3>
+          <p>Genlik ve bant aralığı kontrolü ile yalancı tetikleme engellenir.</p>
+        </div>
+        <div class="flow-card">
+          <h3>Servo geri bildirim</h3>
+          <p>Koruma kapağı kapanır, süre dolunca kontrollü açılır.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="thresholds" class="section reveal">
+      <div class="pill">Frekans eşikleri</div>
+      <h2 class="section-title">Bandlar arasındaki ayrım net ve görünür</h2>
+      <p class="section-subtitle">
+        Eşek arısı ve bal arısı frekansları net bir şekilde ayrılır. Buffer bölgesi,
+        hatalı karar vermeyi azaltmak için kullanılır.
+      </p>
+      <div class="band-panel">
+        <div class="band-bar">
+          <span class="band-marker" style="left: 20%">100 Hz</span>
+          <span class="band-marker" style="left: 40%">180 Hz</span>
+          <span class="band-marker" style="left: 55%">220 Hz</span>
+          <span class="band-marker" style="left: 82%">300 Hz</span>
+        </div>
+        <div class="band-scale">
+          <span>80 Hz</span>
+          <span>200 Hz</span>
+          <span>320 Hz</span>
+        </div>
+        <div class="band-labels">
+          <div class="band-label">Eşek arısı bandı (100 - 180 Hz)</div>
+          <div class="band-label">Buffer bölgesi (180 - 220 Hz)</div>
+          <div class="band-label">Bal arısı bandı (220 - 300 Hz)</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel" class="section reveal">
+      <div class="pill">Durum paneli</div>
+      <h2 class="section-title">Statik panel, canlı entegrasyona hazır</h2>
+      <p class="section-subtitle">
+        Aşağıdaki panel, ileride ESP32 üzerinden gelecek veriler için hazırlanmış bir taslak sunar.
+        Şimdilik değerler örnektir.
+      </p>
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Alan izleme</h3>
+            <p class="panel-note" id="panel-hint">Veriler simüle edilmiştir. ESP32 ile canlı veri burada görünecek.</p>
+          </div>
+          <div class="panel-switch" role="tablist" aria-label="Mod seçimi">
+            <button class="active" type="button" data-mode="sim">Simülasyon</button>
+            <button type="button" data-mode="live">Canlı bağlantı</button>
+          </div>
+        </div>
+        <div class="panel-grid">
+          <div class="panel-card">
+            <h4>Dinleme durumu</h4>
+            <div class="status-pill" id="listen-state">Aktif dinleme</div>
+            <div class="meter" style="--fill: 58%;">
+              <div class="meter-bar">
+                <div class="meter-fill"></div>
+              </div>
+              <div class="meter-label">
+                <span>Ortalama genlik</span>
+                <span>58%</span>
+              </div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <h4>Baskın frekans</h4>
+            <strong>152 Hz</strong>
+            <div class="meter" style="--fill: 42%;">
+              <div class="meter-bar">
+                <div class="meter-fill"></div>
+              </div>
+              <div class="meter-label">
+                <span>Band güven aralığı</span>
+                <span>42%</span>
+              </div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <h4>Savunma tepkisi</h4>
+            <strong>Kapı kapalı</strong>
+            <div class="meter" style="--fill: 76%;">
+              <div class="meter-bar">
+                <div class="meter-fill"></div>
+              </div>
+              <div class="meter-label">
+                <span>Servo pozisyonu</span>
+                <span>76%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="panel-note">Bir sonraki adım: MQTT veya HTTP ile ESP32 verilerini bu panele aktarmak.</p>
+      </div>
+    </section>
+
+    <section id="roadmap" class="section reveal">
+      <div class="pill">Yol haritası</div>
+      <h2 class="section-title">ESP32 entegrasyonu için hazır parçalar</h2>
+      <p class="section-subtitle">Statik gösterimden canlı akışa geçiş için net adımlar.</p>
+      <div class="roadmap">
+        <div class="roadmap-card">
+          <h3>Telemetri çıkışı</h3>
+          <p>ESP32 seri port veya Wi-Fi ile frekans ve genlik verisini gönderecek.</p>
+        </div>
+        <div class="roadmap-card">
+          <h3>Canlı grafikler</h3>
+          <p>Frekans bandı grafiklerini güncelleyen JS modülü eklenecek.</p>
+        </div>
+        <div class="roadmap-card">
+          <h3>Mobil panel</h3>
+          <p>Kovan başında takip için tek sayfa, hafif ve hızlı arayüz.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    HornetSavunma - Arıcılıkta akustik koruma platformu
+  </footer>
+
+  <script>
+    document.documentElement.classList.add("js");
+
+    const revealItems = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    revealItems.forEach((item, index) => {
+      item.style.transitionDelay = `${Math.min(index * 80, 320)}ms`;
+      observer.observe(item);
+    });
+
+    const switches = document.querySelectorAll(".panel-switch button");
+    const hint = document.getElementById("panel-hint");
+    const listenState = document.getElementById("listen-state");
+
+    switches.forEach((button) => {
+      button.addEventListener("click", () => {
+        switches.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        if (button.dataset.mode === "live") {
+          hint.textContent = "Canlı bağlantı bekleniyor. ESP32 entegre edildiğinde veri akışı burada görünecek.";
+          listenState.textContent = "Beklemede";
+          listenState.classList.add("is-idle");
+        } else {
+          hint.textContent = "Veriler simüle edilmiştir. ESP32 ile canlı veri burada görünecek.";
+          listenState.textContent = "Aktif dinleme";
+          listenState.classList.remove("is-idle");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

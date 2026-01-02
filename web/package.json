@@ -1,0 +1,26 @@
+{
+    "name": "hornet-savunma-web",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "dev:lan": "next dev --hostname 0.0.0.0",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+  "dependencies": {
+    "firebase": "10.12.2",
+    "next": "14.2.35",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+        "@types/node": "20.12.12",
+    "@types/react": "18.2.74",
+    "@types/react-dom": "18.2.24",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.35",
+    "typescript": "5.4.5"
+  }
+}
