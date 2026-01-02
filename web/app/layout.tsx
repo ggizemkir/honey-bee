@@ -16,7 +16,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'HornetSavunma - Akustik Tespit Arayüzü',
+  title: 'HornetSavunmaa - Akustik Tespit Arayüzü',
   description:
     'INMP441 mikrofonu ve ESP32 ile 100-1000 Hz aralığında bal arısı / eşek arısı ses tespiti yapan akustik izleme paneli.'
 };
